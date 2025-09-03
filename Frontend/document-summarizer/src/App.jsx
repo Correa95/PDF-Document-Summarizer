@@ -9,6 +9,7 @@ function App() {
           upload your Document:
           <input type="text" className="input" />
         </label>
+        <button className="btn">Submit</button>
       </form>
     </div>
   );
