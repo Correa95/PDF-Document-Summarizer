@@ -74,13 +74,15 @@ app.post("/upload", upload.single("file"), async (req, res) => {
     }
 
     // Ask LLM to summarize while preserving structure
+    system = "You are a helpful assistant with text summarization";
+    system +=
+      "Summarize the text while keeping the original structure (headings, bullet points, numbered lists, etc.).";
     const completion = await client.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
-          content:
-            "You are a summarizer. Summarize the text while keeping the original structure (headings, bullet points, numbered lists, etc.).",
+          content: system,
         },
         { role: "user", content: extractedText },
       ],
