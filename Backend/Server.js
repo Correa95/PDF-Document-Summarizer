@@ -1,11 +1,8 @@
-import express from "express";
 import cors from "cors";
 import multer from "multer";
 import fs from "fs";
 import dotenv from "dotenv";
 import pdf from "pdf-parse";
-// import { Document, Packer, Paragraph, TextRun } from "docx";
-// import { PDFDocument } from "pdf-lib";
 import OpenAI from "openai";
 
 dotenv.config();
@@ -18,6 +15,7 @@ const client = new OpenAI({ apiKey: process.env.OPEN_AI_API_KEY });
 function chunkText(text, chunkSize = 2000) {
   const words = text.split(/\s+/);
   const chunks = [];
+
   for (let i = 0; i < words.length; i += chunkSize) {
     chunks.push(words.slice(i, i + chunkSize).join(" "));
   }
