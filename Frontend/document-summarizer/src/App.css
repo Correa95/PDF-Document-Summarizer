@@ -68,6 +68,7 @@ input:focus {
 }
 
 .button {
+  font-size: 16px;
   position: relative;
   overflow: hidden;
   height: 48px;
