@@ -64,10 +64,14 @@ function App() {
         <div className="summaryContainer">
           <h2 className="summaryHeader">Summary</h2>
           <pre className="pre">{summary}</pre>
-          <button onClick={handleDownload} className="btnAction">
-            Download Summary
-          </button>
-          <button onClick={handlePrint}>Print Summary</button>
+          <div className="btnActions">
+            <button onClick={handleDownload} className="button">
+              Download Summary
+            </button>
+            <button onClick={handlePrint} className="button">
+              Print Summary
+            </button>
+          </div>
         </div>
       )}
     </div>
