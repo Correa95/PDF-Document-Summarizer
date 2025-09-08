@@ -1,0 +1,21 @@
+#,Business Problem,Industry,Tech/Tools Involved,Problem Type,Project Ideas
+1,Inventory waste and stockouts,Retail,"Predictive analytics, Tableau",Supply Chain,Build a dashboard to monitor inventory + ML demand prediction
+2,Automating loan approvals,Finance,"ML risk scoring, OCR",Automation/AI,Train model to approve/reject loans based on applicant data
+3,High customer churn,SaaS,"Product analytics (Mixpanel), React",Customer Retention,Create churn prediction model + user journey visualization
+4,Appointment no-shows,Healthcare,"SMS automation, ML",Ops Optimization,Predict no-shows + build reminder system
+5,Route and fuel optimization,Logistics,"Geolocation, algorithms",Operational Cost,Simulate delivery routes using Google Maps API
+6,Legacy system modernization,Finance,"Cloud migration, DevOps",Digital Transformation,Diagram microservice architecture for migration
+7,Poor monetization of engagement,Media,"Recommenders, A/B testing",Revenue Growth,Build a rec system and A/B test design layouts
+8,Fraudulent account detection,Telecom,"Anomaly detection, Kafka",Security,Create a fraud detection pipeline using synthetic data
+9,Assessing new market demand,Cross-industry,"Python scraping, analytics",Market Entry,Scrape pricing + search trends and visualize demand
+10,Increasing average order value,E-commerce,"Dynamic pricing, personalization",Conversion Optimization,Build pricing engine + UX-based upsell features
+11,Claims processing delays,Insurance,"OCR, AI workflow",Process Automation,Build document processing workflow with mock data
+12,Predicting equipment failure,Manufacturing,"IoT, time-series ML",Predictive Maintenance,Simulate IoT signals + train predictive model
+13,Gym membership churn,Fitness,"Segmentation, BI dashboards",Customer Lifetime Value,Create cohorts + retention analytics dashboards
+14,Predicting student dropouts,Education,"ML, survey NLP",Risk Prediction,Build classifier for dropout risk and dashboard
+15,Hotel dynamic pricing,Hospitality,"Revenue management, ML",Pricing Strategy,Model seasonal pricing with historical demand
+16,Scaling MVP product,Startup,"Load testing, architecture",Scalability,Stress-test backend and propose redesign
+17,Tracking digital marketing ROI,Retail,"Attribution models, GA",Marketing,Build ETL for marketing data + ROI dashboard
+18,Digitizing donation records,Nonprofit,"OCR, mobile app",Data Transformation,Build OCR-to-Google Sheets pipeline
+19,Low app conversion rate,Travel,"Heatmaps, UX A/B tests",Product Optimization,"Create mock UX test, track and compare conversions"
+20,Food waste management,Retail,"Shelf-life prediction, ERP",Sustainability,Forecast perishable demand and reduce overstock

@@ -1,1 +1,1 @@
-# LLM-Document-Summarizer
+# PDF Document Summarizer
