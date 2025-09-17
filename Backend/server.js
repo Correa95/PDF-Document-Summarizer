@@ -14,7 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 const upload = multer({ dest: "uploads/" });
-const client = new OpenAI({ apiKey: process.env.OPEN_AI_API_KEY });
+const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 function chunkText(text, chunkSize = 2000) {
   const words = text.split(/\s+/);
