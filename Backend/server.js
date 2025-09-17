@@ -4,7 +4,7 @@ import multer from "multer";
 import fs from "fs";
 import dotenv from "dotenv";
 import OpenAI from "openai";
-import pdf from "pdf-extraction";
+import pdfParse from "pdf-parse";
 
 dotenv.config();
 
@@ -25,7 +25,7 @@ if (!process.env.OPENAI_API_KEY) {
 }
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-// Utility to chunk text into pieces for summarization
+// Utility to chunk text
 function chunkText(text, chunkSize = 2000) {
   const words = text.split(/\s+/);
   const chunks = [];
@@ -35,27 +35,27 @@ function chunkText(text, chunkSize = 2000) {
   return chunks;
 }
 
-// Extract text from PDF
+// Extract text from PDF using pdf-parse
 async function extractPdfText(filePath) {
   const dataBuffer = fs.readFileSync(filePath);
-  const result = await pdf(dataBuffer);
-  return result.text;
+  const data = await pdfParse(dataBuffer);
+  return data.text;
 }
 
 // Upload endpoint
 app.post("/api/v1/upload", upload.single("file"), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: "No file uploaded" });
+  }
+
+  console.log("Received file:", req.file.originalname);
+  console.log("OPENAI_API_KEY present?", !!process.env.OPENAI_API_KEY);
+
+  const filePath = req.file.path;
+
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: "No file uploaded" });
-    }
-
-    console.log("Received file:", req.file.originalname);
-    console.log("OPENAI_API_KEY present?", !!process.env.OPENAI_API_KEY);
-
-    const filePath = req.file.path;
     let extractedText = "";
 
-    // Handle PDF and TXT files
     if (req.file.mimetype === "application/pdf") {
       extractedText = await extractPdfText(filePath);
     } else if (req.file.mimetype === "text/plain") {
@@ -68,19 +68,27 @@ app.post("/api/v1/upload", upload.single("file"), async (req, res) => {
     const chunks = chunkText(extractedText, 2000);
     const chunkSummaries = [];
 
-    // Summarize each chunk
-    for (let chunk of chunks) {
-      const completion = await client.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: "You are a helpful summarizer." },
-          { role: "user", content: `Summarize this section:\n\n${chunk}` },
-        ],
-      });
-      chunkSummaries.push(completion.choices[0].message.content);
+    // Summarize each chunk safely
+    for (let i = 0; i < chunks.length; i++) {
+      try {
+        const completion = await client.chat.completions.create({
+          model: "gpt-4o-mini",
+          messages: [
+            { role: "system", content: "You are a helpful summarizer." },
+            {
+              role: "user",
+              content: `Summarize this section:\n\n${chunks[i]}`,
+            },
+          ],
+        });
+        chunkSummaries.push(completion.choices[0].message.content);
+      } catch (err) {
+        console.error(`Failed on chunk ${i}:`, err);
+        chunkSummaries.push("[ERROR: Could not summarize this section]");
+      }
     }
 
-    // Combine chunk summaries into a final summary
+    // Combine chunk summaries
     const finalCompletion = await client.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
@@ -101,6 +109,7 @@ app.post("/api/v1/upload", upload.single("file"), async (req, res) => {
     res.json({ summary: finalSummary, sections: chunkSummaries });
   } catch (err) {
     console.error("Summarization error:", err);
+    fs.existsSync(filePath) && fs.unlinkSync(filePath);
     res
       .status(500)
       .json({ error: "Summarization failed", detail: err.message || err });
