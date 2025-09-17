@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import "./App.css";
 function App() {
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
   const [file, setFile] = useState(null);
   const [summary, setSummary] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,7 +19,7 @@ function App() {
     formData.append("file", file);
 
     try {
-      const res = await fetch("http://localhost:3000/api/v1/upload", {
+      const res = await fetch(`${BACKEND_URL}/upload`, {
         method: "POST",
         body: formData,
       });
