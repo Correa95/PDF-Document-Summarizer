@@ -14,7 +14,6 @@ function App() {
     if (!file) return alert("Please select a file!");
 
     setLoading(true);
-
     const formData = new FormData();
     formData.append("file", file);
 
@@ -23,11 +22,23 @@ function App() {
         method: "POST",
         body: formData,
       });
-      const data = await res.json();
-      setSummary(data.summary);
+
+      const text = await res.text(); // Read raw response
+      try {
+        const data = JSON.parse(text); // Try parsing JSON
+        if (data.summary) {
+          setSummary(data.summary);
+        } else {
+          console.warn("No summary found in response:", data);
+          alert("No summary returned. Check backend logs.");
+        }
+      } catch (parseErr) {
+        console.error("Failed to parse JSON:", text);
+        alert("Invalid response from server. Check backend.");
+      }
     } catch (err) {
-      console.error(err);
-      alert("Summarization failed");
+      console.error("Fetch error:", err);
+      alert("Summarization failed. Network or server error.");
     }
 
     setLoading(false);
