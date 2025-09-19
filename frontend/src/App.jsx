@@ -2,13 +2,12 @@ import { useState } from "react";
 
 import "./App.css";
 function App() {
-  const [file, setFile] = useState(null);
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+  const [file, setFile] = useState(null);
   const [summary, setSummary] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleFileChange = (e) => setFile(e.target.files[0]);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!file) return alert("Please select a file!");
@@ -23,25 +22,25 @@ function App() {
         body: formData,
       });
 
-      const text = await res.text(); // Read raw response
-      try {
-        const data = JSON.parse(text); // Try parsing JSON
-        if (data.summary) {
-          setSummary(data.summary);
-        } else {
-          console.warn("No summary found in response:", data);
-          alert("No summary returned. Check backend logs.");
-        }
-      } catch (parseErr) {
-        console.error("Failed to parse JSON:", text);
-        alert("Invalid response from server. Check backend.");
+      if (!res.ok) {
+        // Backend returned an error (400/500)
+        const errorText = await res.text();
+        throw new Error(`Server error ${res.status}: ${errorText}`);
+      }
+
+      const data = await res.json(); // Safe now
+      if (data.summary) {
+        setSummary(data.summary);
+      } else {
+        console.warn("No summary in response:", data);
+        alert("No summary returned. Check backend logs.");
       }
     } catch (err) {
-      console.error("Fetch error:", err);
-      alert("Summarization failed. Network or server error.");
+      console.error("Request failed:", err);
+      alert(`Failed: ${err.message}`);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   const handleDownload = () => {
