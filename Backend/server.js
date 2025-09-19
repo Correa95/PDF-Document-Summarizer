@@ -63,7 +63,7 @@ app.post("/api/v1/upload", upload.single("file"), async (req, res) => {
     for (let i = 0; i < chunks.length; i++) {
       try {
         const completion = await client.chat.completions.create({
-          model: "gpt-4",
+          model: "gpt-4o-mini",
           messages: [
             { role: "system", content: "You are a helpful summarizer." },
             {
