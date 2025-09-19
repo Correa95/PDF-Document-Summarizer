@@ -106,3 +106,6 @@ app.post("/api/v1/upload", upload.single("file"), async (req, res) => {
     if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
   }
 });
+app.listen(PORT, () => {
+  console.log(`Backend running on http://localhost:${PORT}`);
+});
