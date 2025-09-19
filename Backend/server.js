@@ -36,7 +36,6 @@ async function extractPdfText(filePath) {
   const result = await pdf(dataBuffer);
   return result.text;
 }
-
 app.post("/api/v1/upload", upload.single("file"), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "No file uploaded" });
@@ -53,13 +52,12 @@ app.post("/api/v1/upload", upload.single("file"), async (req, res) => {
     } else if (mimeType === "text/plain") {
       extractedText = fs.readFileSync(filePath, "utf-8");
     } else {
-      fs.unlinkSync(filePath);
       return res.status(400).json({ error: "Unsupported file type" });
     }
 
     const chunks = chunkText(extractedText, 2000);
-    const chunkSummaries = [];
 
+    const chunkSummaries = [];
     for (let i = 0; i < chunks.length; i++) {
       try {
         const completion = await client.chat.completions.create({
@@ -72,7 +70,10 @@ app.post("/api/v1/upload", upload.single("file"), async (req, res) => {
             },
           ],
         });
-        chunkSummaries.push(completion.choices[0].message.content);
+
+        const content =
+          completion?.choices?.[0]?.message?.content || "[No summary returned]";
+        chunkSummaries.push(content);
       } catch (err) {
         console.error(`Chunk ${i} failed:`, err.message);
         chunkSummaries.push("[ERROR: Could not summarize this section]");
@@ -80,7 +81,7 @@ app.post("/api/v1/upload", upload.single("file"), async (req, res) => {
     }
 
     const finalCompletion = await client.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
@@ -91,29 +92,17 @@ app.post("/api/v1/upload", upload.single("file"), async (req, res) => {
       ],
     });
 
-    const finalSummary = finalCompletion.choices[0].message.content;
-    fs.unlinkSync(filePath);
+    const finalSummary =
+      finalCompletion?.choices?.[0]?.message?.content ||
+      "[No summary returned]";
 
     res.json({ summary: finalSummary, sections: chunkSummaries });
   } catch (err) {
-    console.error("Summarization error:", {
-      message: err.message,
-      stack: err.stack,
-      response: err.response?.data || null,
-    });
-    fs.existsSync(filePath) && fs.unlinkSync(filePath);
+    console.error("Summarization error:", err);
     res
       .status(500)
       .json({ error: "Summarization failed", detail: err.message });
+  } finally {
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
   }
-});
-
-// Global error handler
-app.use((err, req, res, next) => {
-  console.error("Unhandled error:", err);
-  res.status(500).json({ error: "Internal server error", detail: err.message });
-});
-
-app.listen(PORT, () => {
-  console.log(`✅ Backend running on http://localhost:${PORT}`);
 });
