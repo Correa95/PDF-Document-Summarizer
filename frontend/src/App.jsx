@@ -23,12 +23,11 @@ function App() {
       });
 
       if (!res.ok) {
-        // Backend returned an error (400/500)
         const errorText = await res.text();
         throw new Error(`Server error ${res.status}: ${errorText}`);
       }
 
-      const data = await res.json(); // Safe now
+      const data = await res.json();
       if (data.summary) {
         setSummary(data.summary);
       } else {
